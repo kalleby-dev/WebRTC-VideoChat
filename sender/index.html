@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebRTC-Sender</title>
+
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <div class="form-input">
+    <input type="text" name="user-name" id="user-name" placeholder="Enter your name">
+    <button onclick="onBtnSend()">Send</button>
+    <button onclick="onBtnCall()">Start call</button>
+  </div>
+
+  <div class="video-grid">
+    <video id="local-video" muted autoplay></video>
+    <video id="remote-video" autoplay></video>
+
+    <div class="video-options">
+      <button onclick="onBtnDisableVideo()">Disable video</button>
+      <button onclick="onBtnMuteAudio()">Mute audio</button>
+    </div>
+  </div>
+
+  <script src="./sender.js"></script>
+</body>
+</html>

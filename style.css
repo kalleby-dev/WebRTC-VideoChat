@@ -1,0 +1,44 @@
+
+body{
+  background-color: darkslategrey;
+}
+button{
+  cursor: pointer;
+}
+
+.video-grid{
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 100%;
+  display: none;
+}
+
+.video-options{
+  position: absolute;
+
+  left: 40%;
+  bottom: 10%;
+}
+
+#local-video{
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  max-width: 20%;
+  max-height: 20%;
+
+  margin: 16px;
+  border-radius: 4px;
+  background-color: whitesmoke;
+}
+
+#remote-video{
+  width: 100%;
+  height: 100%;
+
+  background-color: #222030e5;
+}
