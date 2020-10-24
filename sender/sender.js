@@ -20,6 +20,7 @@ function sendData(data){
 
 // Recebe e envia os dados da video-chamada
 let localStream;
+let peerConnection;
 function startStream(){
   console.log("Inciando chamada");
 
@@ -34,6 +35,10 @@ function startStream(){
   .then(stream => {
     localStream = stream;
     playLocalVideo(localStream);
+
+    peerConnection = createPeerConnection(localStream);
+    peerConnection.ontrack = (remoteStream) => playRemoteVideo(remoteStream);
+
   })
   .catch(error => {
     console.error(error);
@@ -42,4 +47,26 @@ function startStream(){
 
 function playLocalVideo(stream){
   document.querySelector("#local-video").srcObject = stream;
+}
+
+function playRemoteVideo(stream){
+  document.querySelector("#remote-video").srcObject = stream;
+}
+
+function createPeerConnection(stream){
+  let config = {
+    iceServers: [
+      {
+        "urls": [
+          "stun:stun.l.google.com:19302",
+          "stun:stun1.l.google.com:19302",
+          "stun:stun2.l.google.com:19302",
+        ]
+      }
+    ]
+  };
+  const peer = new RTCPeerConnection(config);
+  peer.addStream(stream);
+  console.log(peer);
+  return peer;
 }
