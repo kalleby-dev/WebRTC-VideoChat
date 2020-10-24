@@ -36,7 +36,10 @@ function startStream(){
     peerConnection = createPeerConnection(localStream);
     peerConnection.ontrack = (remoteStream) => playRemoteVideo(remoteStream);
 
+    peerConnection.onicecandidate = (iceCandidate) => getCandidate(iceCandidate);
     createOffer(peerConnection);
+
+    console.log(peerConnection);
   })
   .catch(error => {
     console.error(error);
@@ -65,6 +68,15 @@ function createPeerConnection(stream){
   const peer = new RTCPeerConnection(config);
   peer.addStream(stream);
   return peer;
+}
+
+function getCandidate(iceCandidate){
+  if(iceCandidate.candidate === null) return;
+
+  sendData({
+    type: "store_candidate",
+    candidate: iceCandidate.candidate
+  });
 }
 
 // Cria e envia a oferta de chamada para o servidor socket
