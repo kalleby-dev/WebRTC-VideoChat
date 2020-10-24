@@ -27,7 +27,6 @@ function sendData(data){
 
 // Recebe e envia os dados da video-chamada
 let localStream;
-let peerConnection;
 function startStream(){
   navigator.mediaDevices.getUserMedia(midiaParam).then(stream => {
     localStream = stream;
@@ -105,4 +104,16 @@ function handleSignalling(peerConnection, data){
       peerConnection.addIceCandidate(data.candidate);
       break
   }
+}
+
+let isAudio = true;
+function onBtnMuteAudio(){
+  isAudio = !isAudio;
+  localStream.getAudioTracks()[0].enabled = isAudio;
+}
+
+let isVideo = true;
+function onBtnDisableVideo(){
+  isVideo = !isVideo;
+  localStream.getVideoTracks()[0].enabled = isVideo;
 }
