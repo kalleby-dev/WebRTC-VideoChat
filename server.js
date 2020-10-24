@@ -27,7 +27,21 @@ webWocket.on('request', (req) =>{
     const data = JSON.parse(msg.utf8Data);
     handleMessage(connection, data);
   });
+
+  connection.on("close", () =>{
+    users.forEach(user =>{
+      if(user.conn == connection){
+        users.splice(users.indexOf(user), 1);
+        return;
+      }
+    });
+  });
+  
 });
+
+function sendData(connection, data){
+  connection.send(JSON.stringify(data));
+}
 
 // Captura e processa as menssagens dos clients
 function handleMessage(connection, data){
@@ -43,6 +57,20 @@ function handleMessage(connection, data){
     case "store_candidate":
       storeCandidate(data);
       break;
+    
+    case "send_answer":
+      sendAnswer(data);
+      console.log("Enviando resposta");
+      break;
+    
+    case "send_candidate":
+      sendCandidate(data);
+      console.log("Enviando candidate");
+      break;
+    
+    case "join_call":
+      joinCall(connection, data);
+      break
   
     default:
       break;
@@ -58,7 +86,7 @@ function storeUser(connection, username){
   };
 
   users.push(newUser);
-  //console.log("New user: " + newUser.username);
+  console.log("New user: " + newUser.username);
 }
 
 function storeOffer(data){
@@ -77,4 +105,41 @@ function storeCandidate(data){
 
   user.candidates.push(data.candidate);
   //console.log("Storing candidates for: " + user.username, user.candidates);
+}
+
+function sendAnswer(data){
+  const user = findUser(data.username);
+  if(user == null) return;
+
+  sendData(user.conn, {
+    type: "answer",
+    answer: data.answer
+  });
+}
+
+function sendCandidate(data){
+  const user = findUser(data.username);
+  if(user == null) return;
+
+  sendData(user.conn, {
+    type: "candidate",
+    candidate: data.candidate
+  });
+}
+
+function joinCall(connection, data){
+  const user = findUser(data.username);
+  if(user == null) return;
+
+  sendData(connection, {
+    type: "offer",
+    offer: user.offer
+  });
+
+  user.candidates.forEach(candidate =>{
+    sendData(connection, {
+      type: "candidate",
+      candidate: candidate
+    })
+  });
 }
