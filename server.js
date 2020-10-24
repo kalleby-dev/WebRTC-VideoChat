@@ -35,6 +35,10 @@ function handleMessage(connection, data){
     case "store_user":
       storeUser(connection, data.username);
       break;
+    
+    case "store_offer":
+      storeOffer(data);
+      break;
   
     default:
       break;
@@ -53,3 +57,10 @@ function storeUser(connection, username){
   console.log("New user: " + newUser.username);
 }
 
+function storeOffer(data){
+  const user = findUser(data.username);
+  if(user == null) return;
+
+  user.offer = data.offer;
+  console.log("Storing offer for: " + user.username, user.offer);
+}
