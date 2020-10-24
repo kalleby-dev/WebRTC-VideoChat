@@ -39,6 +39,10 @@ function handleMessage(connection, data){
     case "store_offer":
       storeOffer(data);
       break;
+    
+    case "store_candidate":
+      storeCandidate(data);
+      break;
   
     default:
       break;
@@ -54,7 +58,7 @@ function storeUser(connection, username){
   };
 
   users.push(newUser);
-  console.log("New user: " + newUser.username);
+  //console.log("New user: " + newUser.username);
 }
 
 function storeOffer(data){
@@ -62,5 +66,15 @@ function storeOffer(data){
   if(user == null) return;
 
   user.offer = data.offer;
-  console.log("Storing offer for: " + user.username, user.offer);
+  //console.log("Storing offer for: " + user.username, user.offer);
+}
+
+function storeCandidate(data){
+  const user = findUser(data.username);
+  if(user == null) return;
+
+  if(user.candidates == null) user.candidates = [];
+
+  user.candidates.push(data.candidate);
+  //console.log("Storing candidates for: " + user.username, user.candidates);
 }
