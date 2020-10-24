@@ -33,7 +33,7 @@ function startStream(){
     playLocalVideo(localStream);
 
     peerConnection = createPeerConnection(localStream);
-    peerConnection.ontrack = (remoteStream) => playRemoteVideo(remoteStream);
+    peerConnection.onaddstream = (remote) => playRemoteVideo(remote.stream);
 
     peerConnection.onicecandidate = (iceCandidate) => getCandidate(iceCandidate);
     createOffer(peerConnection);
