@@ -9,13 +9,13 @@ const midiaParam = {
 };
 
 let username;
-function onBtnSend(){
+function getUsername(){
   username = document.querySelector("#user-name").value;
-  sendData({ type: "store_user" });
 }
 
-function onBtnCall(){
+function onBtnJoin(){
   document.querySelector(".video-grid").style.display = "block";
+  getUsername();
   startStream();
 }
 
@@ -36,10 +36,12 @@ function startStream(){
     peerConnection.ontrack = (remoteStream) => playRemoteVideo(remoteStream);
 
     peerConnection.onicecandidate = (iceCandidate) => getCandidate(iceCandidate);
-    createOffer(peerConnection);
 
     webSocket.onmessage = (msg) => handleSignalling(peerConnection, JSON.parse(msg.data));
     
+    sendData({
+      type: "join_call"
+    });
     console.log(peerConnection);
   })
   .catch(error => {
@@ -75,20 +77,20 @@ function getCandidate(iceCandidate){
   if(iceCandidate.candidate === null) return;
 
   sendData({
-    type: "store_candidate",
+    type: "send_candidate",
     candidate: iceCandidate.candidate
   });
 }
 
-// Cria e envia a oferta de chamada para o servidor socket
-function createOffer(peerConnection){
-  peerConnection.createOffer((offer) =>{
+// Cria e envia a resposta da chamada para o servidor socket
+function createAnswer(peerConnection){
+  peerConnection.createAnswer((answer) =>{
     sendData({
-      type: "store_offer",
-      offer: offer
+      type: "send_answer",
+      answer: answer
     });
 
-    peerConnection.setLocalDescription(offer);
+    peerConnection.setLocalDescription(answer);
   }, (error) => console.error(error));
 }
 
@@ -96,8 +98,9 @@ function createOffer(peerConnection){
 function handleSignalling(peerConnection, data){
   console.log("Socket says: " + data);
   switch (data.type) {
-    case "answer":
-      peerConnection.setRemoteDescription(data.answer);
+    case "offer":
+      peerConnection.setRemoteDescription(data.offer);
+      createAnswer(peerConnection);
       break;
     
     case "candidate":
