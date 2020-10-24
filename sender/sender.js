@@ -39,6 +39,8 @@ function startStream(){
     peerConnection.onicecandidate = (iceCandidate) => getCandidate(iceCandidate);
     createOffer(peerConnection);
 
+    webSocket.onmessage = (msg) => handleSignalling(peerConnection, JSON.parse(msg.data));
+    
     console.log(peerConnection);
   })
   .catch(error => {
@@ -89,4 +91,18 @@ function createOffer(peerConnection){
 
     peerConnection.setLocalDescription(offer);
   }, (error) => console.error(error));
+}
+
+// Captura as informações do socket
+function handleSignalling(peerConnection, data){
+  console.log("Socket says: " + data);
+  switch (data.type) {
+    case "answer":
+      peerConnection.setRemoteDescription(data.answer);
+      break;
+    
+    case "candidate":
+      peerConnection.addIceCandidate(data.candidate);
+      break
+  }
 }
